@@ -10,18 +10,14 @@ The user can easily start/stop the location service, add users & groups, add geo
   <img src="/images/AuthActivity.jpg" width="150"/>
   <img src="/images/DrawerMenu.jpg" width="150"/>
   <img src="/images/groupCode.jpg" width="150"/>
-  
-<img src="/images/joinGroup.jpg" width="150"/>
-<img src="/images/mapsActivity9.jpg" width="150"/>
-<img src="/images/mapsActivity11.jpg" width="150"/>
+  <img src="/images/joinGroup.jpg" width="150"/>
+  <img src="/images/mapsActivity9.jpg" width="150"/>
+  <img src="/images/mapsActivity11.jpg" width="150"/>
+  <img src="/images/placesActivity.jpg" width="150"/>
+  <img src="/images/profileActivity2.jpg" width="150"/>
+  <img src="/images/testiranje1.jpg" width="150"/>
 </p>
-<p float="left">
-</p>
-<p float="left">
-<img src="/images/placesActivity.jpg" width="150"/>
-<img src="/images/profileActivity2.jpg" width="150"/>
-<img src="/images/testiranje1.jpg" width="150"/>
-</p>
+
 
 
 
