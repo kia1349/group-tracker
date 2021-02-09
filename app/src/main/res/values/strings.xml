@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">GroupTracker</string>
+    <string name="facebook_app_id">2686586881553042</string>
+    <string name="fb_login_protocol_scheme">fb2686586881553042</string>
+    <string name="google_maps_api_key">AIzaSyDobpVrgQkKyRfAj7fcHIfnOzBKyowT9qI</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+
+    <!-- Firestore Strings -->
+    <string name="collection_users">Users</string>
+    <string name="collection_groups">Groups</string>
+    <string name="collection_chat_messages">Chat Messages</string>
+    <string name="collection_group_user_list">User List</string>
+    <string name="collection_group_list">Group List</string>
+    <string name="collection_user_locations">User Locations</string>
+    <string name="collection_group_places">Place List</string>
+
+    <!-- Intent extras -->
+    <string name="intent_group">intent_group</string>
+    <string name="intent_user_list">intent_user_list</string>
+    <string name="intent_user">intent_user</string>
+    <string name="intent_joined_group">intent_joined_group</string>
+    <string name="intent_user_locations">intent_user_locations</string>
+    <string name="intent_geofence">geofence</string>
+    <string name="intent_group_place">place</string>
+    <string name="collection_tokens">Tokens</string>
+
+</resources>

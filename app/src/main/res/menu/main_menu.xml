@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map_white"
+            android:title="Map" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_profile_white"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_places"
+            android:icon="@drawable/ic_groups_white"
+            android:title="Places" />
+        <item
+            android:id="@+id/nav_join_group"
+            android:icon="@drawable/ic_group_add_black_24dp"
+            android:title="Join Group" />
+        <item
+            android:id="@+id/nav_code"
+            android:icon="@drawable/ic_fiber_pin_black_24dp"
+            android:title="Group Code" />
+        <item
+            android:id="@+id/nav_chat"
+            android:icon="@drawable/ic_timeline_black_24dp"
+            android:title="Chat" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:title="Settings"/>
+        <item
+            android:id="@+id/nav_sign_out"
+            android:icon="@drawable/ic_key_white"
+            android:title="Sign Out" />
+    </group>
+</menu>

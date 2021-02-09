@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container_fragment"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginBottom="-30dp">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="50"
+            android:clipToPadding="false"
+            android:layout_marginBottom="-30dp"
+            android:id="@+id/map_container">
+
+            <com.google.android.gms.maps.MapView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/user_list_map"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:clipToPadding="false"
+                android:layout_marginTop="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:padding="5dp"
+                android:layout_alignParentTop="true"
+                >
+
+                <androidx.appcompat.widget.SearchView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/search_location"
+                    android:padding="5dp"
+                    android:layout_alignParentRight="true"
+                    app:queryHint="Search address..."
+                    android:background="@drawable/rounded_shape_white"
+                    android:elevation="5dp"/>
+            </RelativeLayout>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp"
+                android:tint="@color/colorSecondary"
+                android:background="@drawable/rounded_shape_white"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="40dp"
+                android:layout_marginRight="10dp"
+                android:elevation="5dp"
+                android:id="@+id/btn_full_screen_map"/>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:srcCompat="@drawable/ic_my_location_black_24dp"
+                android:background="@drawable/rounded_shape_white"
+                android:layout_toLeftOf="@id/btn_full_screen_map"
+                android:layout_alignParentBottom="true"
+                android:tint="@color/colorSecondary"
+                android:layout_marginBottom="40dp"
+                android:elevation="5dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/btn_my_location"/>
+        </RelativeLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="50"
+            android:id="@+id/editGeofence"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:background="@color/white"
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/title_layout"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/geofenceTitle"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Geofence Title"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    app:endIconMode="clear_text"
+                    app:startIconDrawable="@drawable/ic_baseline_label_24">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/colorSecondary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/radius"
+                android:layout_marginTop="5dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title_layout">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Geofence Radius: "
+                        android:fontFamily="@font/montserrat_bold"
+                        android:layout_marginLeft="5dp"
+                        app:layout_constraintBottom_toTopOf="@id/radius_slider"
+                        app:layout_constraintLeft_toLeftOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/tvRadius"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="200 m"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:layout_marginLeft="5dp"
+                        app:layout_constraintBottom_toTopOf="@id/radius_slider"
+                        app:layout_constraintLeft_toLeftOf="parent"/>
+                </LinearLayout>
+
+            <com.google.android.material.slider.Slider
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/radius_slider"
+                app:tickColor="@color/colorSecondary"
+                android:padding="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:value="200.0"
+                android:valueFrom="50.0"
+                android:valueTo="1000.0"  />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/notifications"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/radius"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Geofence Trigger Notifications"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:layout_marginLeft="5dp"
+                    app:layout_constraintBottom_toTopOf="@id/radius_slider"
+                    app:layout_constraintLeft_toLeftOf="parent"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:layout_width="wrap_content"
+                            android:id="@+id/enter_geofence"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Enter"
+                            android:textAllCaps="true"
+                            android:fontFamily="@font/montserrat_medium"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:layout_width="wrap_content"
+                            android:id="@+id/dwell_geofence"
+                            android:theme="@style/AppTheme"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dwell"
+                            android:textAllCaps="true"
+                            android:fontFamily="@font/montserrat_medium"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:layout_width="wrap_content"
+                            android:id="@+id/exit_geofence"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Exit"
+                            android:textAllCaps="true"
+                            android:fontFamily="@font/montserrat_medium"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="40dp"
+                android:backgroundTint="@color/colorSecondary"
+                app:icon="@drawable/places_ic_clear"
+                android:id="@+id/closeBtn"
+                android:textAllCaps="false"
+                />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:layout_marginLeft="40dp"
+                android:textColor="@color/colorSecondary"
+                app:icon="@drawable/ic_save_black_24dp"
+                app:iconTint="@color/colorSecondary"
+                android:id="@+id/saveBtn"
+                android:backgroundTint="@color/colorPrimary"
+                android:textAllCaps="true"
+                />
+
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</RelativeLayout>

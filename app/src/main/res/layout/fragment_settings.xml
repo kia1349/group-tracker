@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Main.Authentication.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_labellat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Latitude:"
+                android:fontFamily="@font/montserrat_bold"
+                android:textSize="24sp"/>
+
+            <TextView
+                android:id="@+id/tv_lat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                android:fontFamily="@font/montserrat_medium" />
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/tv_labellon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Longitude:"
+        android:fontFamily="@font/montserrat_bold"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_labellat" />
+
+    <TextView
+        android:id="@+id/tv_lon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0.00"
+        android:fontFamily="@font/montserrat_medium"
+        android:textSize="18sp"
+        android:textAlignment="textEnd" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/tv_labelaltitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:textSize="24sp"
+        android:text="Altitude:" />
+
+    <TextView
+        android:id="@+id/tv_altitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_medium"
+        android:textSize="18sp"
+        android:textAlignment="textEnd"
+        android:text="0.00" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/tv_labelaccuracy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:textSize="24sp"
+        android:text="Accuracy:" />
+
+    <TextView
+        android:id="@+id/tv_accuracy"
+        android:textAlignment="textEnd"
+        android:fontFamily="@font/montserrat_medium"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0.00" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/tv_labelspeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:textSize="24sp"
+        android:text="Speed:" />
+
+    <TextView
+        android:id="@+id/tv_speed"
+        android:fontFamily="@font/montserrat_medium"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:text="0.00" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_lbladdress"
+            android:layout_width="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:textSize="24sp"
+            android:layout_height="wrap_content"
+            android:text="Address:" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_address"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="No Address"
+            android:textAlignment="textEnd"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="?android:attr/listDivider"
+            tools:layout_editor_absoluteX="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/location_interval"
+            android:layout_marginTop="5dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location update interval: "
+                android:fontFamily="@font/montserrat_bold"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintBottom_toTopOf="@id/radius_slider"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <TextView
+                android:id="@+id/tvUpdateInterval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5000 ms"
+                android:fontFamily="@font/montserrat_medium"
+                android:layout_marginLeft="5dp"
+                app:layout_constraintBottom_toTopOf="@id/radius_slider"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+            <com.google.android.material.slider.Slider
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/location_interval_slider"
+                app:tickColor="@color/colorSecondary"
+                android:padding="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:value="4000.0"
+                android:valueFrom="1000.0"
+                android:valueTo="10000.0"  />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="bottom">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:padding="10dp"
+                android:clipToPadding="false"
+                android:layout_marginBottom="50dp">
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:id="@+id/cancelLocationUpdateBtn"
+                android:backgroundTint="@color/colorSecondary"
+                android:src="@drawable/ic_baseline_clear_24"
+                android:tint="@color/red"
+                app:fabSize="mini"
+                android:visibility="invisible"
+                android:textAllCaps="false"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/colorSecondary"
+                android:src="@drawable/ic_baseline_done_24"
+                android:id="@+id/saveLocationUpdateButton"
+                app:fabSize="mini"
+                android:textAllCaps="false"
+                android:visibility="invisible"
+                />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

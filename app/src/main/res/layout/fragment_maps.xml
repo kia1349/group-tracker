@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginBottom="-30dp">
+            <com.google.android.gms.maps.MapView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/google_map"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/add_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="3dp"
+        android:scaleX="0.67"
+        android:scaleY="0.67"
+        android:backgroundTint="@color/white"
+        app:iconTint="@color/colorSecondary"
+        app:icon="@drawable/ic_keyboard_arrow_down_black_24dp"
+        android:layout_marginTop="95dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_reset_map_floating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_reload_black"
+        android:layout_below="@id/add_fab"
+        android:layout_marginEnd="7dp"
+        android:layout_alignParentEnd="true"
+        app:tint="@color/white"
+        app:fabSize="mini"
+        app:backgroundTint="@color/colorSecondary"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/textview_reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/btn_reset_map_floating"
+        android:layout_below="@id/add_fab"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/montserrat_medium"
+        android:padding="8dp"
+        android:background="@drawable/rounded_shape_transparent"
+        android:text="Reset Markers"
+        android:textColor="@color/colorSecondary"
+        android:visibility="invisible" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_my_location_floating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_reset_map_floating"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="7dp"
+        app:tint="@color/white"
+        app:fabSize="mini"
+        android:src="@drawable/ic_my_location_black_24dp"
+        app:backgroundTint="@color/colorSecondary"
+        android:visibility="invisible"
+ />
+
+    <TextView
+        android:id="@+id/textview_my_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textview_reset"
+        android:fontFamily="@font/montserrat_medium"
+        android:background="@drawable/rounded_shape_transparent"
+        android:padding="8dp"
+        android:layout_toLeftOf="@id/btn_my_location_floating"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="16dp"
+        android:text="My Location"
+        android:textColor="@color/colorSecondary"
+        android:visibility="invisible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_map_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_my_location_floating"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="7dp"
+        app:tint="@color/white"
+        app:fabSize="mini"
+        android:src="@drawable/ic_map_layers"
+        app:backgroundTint="@color/colorSecondary"
+        android:visibility="invisible"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/map_type_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/more_rounded_shape_white"
+        android:elevation="5dp"
+        android:padding="8dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginTop="3dp"
+        android:visibility="invisible"
+        android:layout_alignRight="@+id/btn_map_type"
+        android:layout_alignTop="@id/btn_map_type">
+
+
+        <View
+            android:id="@+id/map_type_default_background"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:background="@drawable/rounded_rectangle"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/map_type_default"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_default"
+            app:layout_constraintStart_toStartOf="@+id/map_type_default"
+            app:layout_constraintTop_toTopOf="@+id/map_type_default" />
+
+        <ImageButton
+            android:id="@+id/map_type_default"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/type_default"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+        <View
+            android:id="@+id/map_type_satellite_background"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:background="@drawable/rounded_rectangle"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/map_type_satellite"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_satellite"
+            app:layout_constraintStart_toStartOf="@+id/map_type_satellite"
+            app:layout_constraintTop_toTopOf="@+id/map_type_satellite" />
+
+        <ImageButton
+            android:id="@+id/map_type_satellite"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/type_satellite"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toStartOf="@+id/map_type_terrain"
+            app:layout_constraintStart_toEndOf="@+id/map_type_default"
+            app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+        <View
+            android:id="@+id/map_type_terrain_background"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:background="@drawable/rounded_rectangle"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/map_type_terrain"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_terrain"
+            app:layout_constraintStart_toStartOf="@+id/map_type_terrain"
+            app:layout_constraintTop_toTopOf="@+id/map_type_terrain" />
+
+        <ImageButton
+            android:id="@+id/map_type_terrain"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/type_terrain"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toStartOf="@+id/map_type_hybrid"
+            app:layout_constraintStart_toEndOf="@+id/map_type_satellite"
+            app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+        <View
+            android:id="@+id/map_type_hybrid_background"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:background="@drawable/rounded_rectangle"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/map_type_hybrid"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_hybrid"
+            app:layout_constraintStart_toStartOf="@+id/map_type_hybrid"
+            app:layout_constraintTop_toTopOf="@+id/map_type_hybrid" />
+
+        <ImageButton
+            android:id="@+id/map_type_hybrid"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/hybrid_map_type3"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Map Type Selection"
+            android:textAllCaps="true"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/map_type_default_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Default"
+            android:fontFamily="@font/montserrat_medium"
+            android:textColor="#808080"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_default"
+            app:layout_constraintStart_toStartOf="@+id/map_type_default"
+            app:layout_constraintTop_toBottomOf="@+id/map_type_default" />
+
+        <TextView
+            android:id="@+id/map_type_satellite_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Satellite"
+            android:fontFamily="@font/montserrat_medium"
+            android:textColor="#808080"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_satellite"
+            app:layout_constraintStart_toStartOf="@+id/map_type_satellite"
+            app:layout_constraintTop_toBottomOf="@+id/map_type_satellite" />
+
+        <TextView
+            android:id="@+id/map_type_terrain_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Terrain"
+            android:fontFamily="@font/montserrat_medium"
+            android:textColor="#808080"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_terrain"
+            app:layout_constraintStart_toStartOf="@+id/map_type_terrain"
+            app:layout_constraintTop_toBottomOf="@+id/map_type_terrain" />
+
+        <TextView
+            android:id="@+id/map_type_hybrid_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Hybrid"
+            android:fontFamily="@font/montserrat_medium"
+            android:textColor="#808080"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/map_type_hybrid"
+            app:layout_constraintStart_toStartOf="@+id/map_type_hybrid"
+            app:layout_constraintTop_toBottomOf="@+id/map_type_hybrid" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textview_map_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textview_my_location"
+        android:background="@drawable/rounded_shape_transparent"
+        android:padding="8dp"
+        android:layout_toLeftOf="@id/btn_map_type"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/montserrat_medium"
+        android:text="Map Type"
+        android:textColor="@color/colorSecondary"
+        android:visibility="invisible" />
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp">
+
+        <include layout="@layout/bottom_sheet_layout"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_users"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            app:layout_anchorGravity="top|start"
+            app:layout_anchor="@id/bottom_sheet"
+            app:layout_dodgeInsetEdges="bottom"
+            app:tint="@color/white"
+            android:src="@drawable/ic_group_black_24dp"
+            app:backgroundTint="@color/colorSecondary"
+            />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:drawingCacheQuality="high"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDrawable="@mipmap/ic_launcher_foreground"
+        android:indeterminateDuration="2000"
+        android:visibility="gone"
+        />
+</RelativeLayout>

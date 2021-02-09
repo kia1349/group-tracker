@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:padding="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:clipToPadding="false"
+        android:padding="5dp"
+        android:layout_marginTop="100dp"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_marginTop="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondary"
+                android:layout_gravity="center_horizontal"
+                android:text='Enter group code to join'
+                android:textSize="26sp"
+                android:textAlignment="center"
+                android:fontFamily="@font/montserrat_medium_italic"
+                android:textColorHint="@color/colorSecondaryLight"/>
+
+            <com.mukesh.OtpView
+                android:id="@+id/otp_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:cursorVisible="true"
+                app:OtpItemWidth="40dp"
+                app:OtpItemHeight="50dp"
+                android:inputType="number"
+                android:itemBackground="@color/colorPrimary"
+                android:textColor="@color/colorSecondary"
+                app:OtpItemCount="6"
+                app:OtpItemSpacing="10dp"
+                app:OtpLineColor="@color/colorPrimaryDark"
+                app:OtpViewType="line"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:gravity="center"
+                android:padding="25dp">
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:elevation="5dp"
+                    android:text="Join"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:textColor="@color/colorSecondary"
+                    app:icon="@drawable/ic_group_add_black_24dp"
+                    app:iconPadding="8dp"
+                    app:iconSize="35dp"
+                    android:textSize="16sp"
+                    app:iconTint="@color/colorSecondary"
+                    android:id="@+id/joinBtn"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/persCode"
+                    android:textAllCaps="true"
+                    />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/persCode2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryLight"
+                android:gravity="center_horizontal"
+                android:text='Enter the code you received to join a group'
+                android:textSize="24sp"
+                android:padding="5dp"
+                android:textAlignment="center"
+                android:fontFamily="@font/montserrat_medium_italic"
+                android:textColorHint="@color/colorSecondaryLight"
+                android:layout_below="@id/actions"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

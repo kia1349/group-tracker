@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/location_text"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/tv_latitude"
+            app:actionLayout="@layout/text_menu"
+            android:title="Latitude: " />
+        <item
+            android:id="@+id/tv_longitude"
+            app:actionLayout="@layout/text_menu"
+            android:title="Longitude: " />
+        <item
+            android:id="@+id/tv_altitude"
+            app:actionLayout="@layout/text_menu"
+            android:title="Altitude: " />
+        <item
+            android:id="@+id/tv_accuracy"
+            app:actionLayout="@layout/text_menu"
+            android:title="Accuracy: " />
+        <item
+            android:id="@+id/tv_speed"
+            app:actionLayout="@layout/text_menu"
+            android:title="Speed: " />
+        <item
+            android:id="@+id/tv_address"
+            app:actionLayout="@layout/text_menu"
+            android:title="Address: " />
+    </group>
+    <group
+        android:id="@+id/switch_buttons"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/sw_locationsupdates"
+            app:actionLayout="@layout/switch_menu"
+            android:icon="@drawable/ic_location_on_black_24dp"
+            android:title="Update Location"/>
+
+        <item
+            android:id="@+id/tv_updates"
+            app:actionLayout="@layout/text_menu"
+            android:title="Updates: " />
+
+        <item
+            android:id="@+id/sw_gps"
+            app:actionLayout="@layout/switch_menu"
+            android:icon="@drawable/ic_battery_charging_full_black_24dp"
+            android:title="Save Power"/>
+
+        <item
+            android:id="@+id/tv_sensor"
+            app:actionLayout="@layout/text_menu"
+            android:title="Sensors: " />
+
+    </group>
+</menu>

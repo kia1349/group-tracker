@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Main.Maps.CodeFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="5dp"
+        android:layout_marginTop="100dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/familyName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondary"
+            android:layout_gravity="center_horizontal"
+            android:text='Your Group Code'
+            android:textSize="26sp"
+            android:textAlignment="center"
+            android:fontFamily="@font/montserrat_medium_italic"
+            android:textColorHint="@color/colorSecondaryLight"/>
+
+        <com.mukesh.OtpView
+            android:id="@+id/persCode"
+            android:elevation="5dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_below="@id/familyName"
+            app:OtpItemWidth="40dp"
+            android:text="000000"
+            android:enabled="false"
+            app:OtpItemHeight="50dp"
+            android:inputType="number"
+            app:OtpState_filled="true"
+            android:itemBackground="@color/colorPrimary"
+            android:textColor="@color/colorSecondary"
+            app:OtpItemCount="6"
+            app:OtpItemSpacing="10dp"
+            app:OtpLineColor="@color/colorPrimaryDark"
+            app:OtpViewType="line"
+            />
+
+        <LinearLayout
+            android:id="@+id/actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/persCode"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:clipToPadding="false"
+            android:padding="25dp"
+            >
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Copy"
+                android:fontFamily="@font/montserrat_bold"
+                android:textColor="@color/colorSecondary"
+                app:icon="@drawable/ic_content_copy_black_24dp"
+                app:iconPadding="8dp"
+                android:elevation="5dp"
+                app:iconSize="30dp"
+                android:textSize="14sp"
+                app:iconTint="@color/colorSecondary"
+                android:id="@+id/copyBtn"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/persCode"
+                android:textAllCaps="true"
+                />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Share"
+                android:fontFamily="@font/montserrat_bold"
+                android:textColor="@color/colorSecondary"
+                app:icon="@drawable/ic_share_white_24dp"
+                app:iconPadding="8dp"
+                android:elevation="5dp"
+                app:iconSize="30dp"
+                android:textSize="14sp"
+                app:iconTint="@color/colorSecondary"
+                android:id="@+id/shareBtn"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/persCode"
+                android:textAllCaps="true"
+                />
+        </LinearLayout>
+
+            <TextView
+                android:id="@+id/persCode2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryLight"
+                android:gravity="center_horizontal"
+                android:text='Save this invite code to clipboard or share the code\n\nYour friends and family will need it to join your group'
+                android:textSize="24sp"
+                android:textAlignment="center"
+                android:fontFamily="@font/montserrat_medium_italic"
+                android:textColorHint="@color/colorSecondaryLight"
+                android:layout_below="@id/actions"/>
+
+
+
+
+        </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#81c784</color>
+    <color name="colorTransparentPrimary">#7B81c784</color>
+    <color name="colorTransparentPrimaryDark">#77519657</color>
+    <color name="colorPrimaryDark">#519657</color>
+    <color name="colorAccent">@color/colorPrimary</color>
+    <color name="drawer_background">@color/white</color>
+    <color name="spinner_background">#5FFFFFFF</color>
+    <color name="spinner_background_black">#6F000000</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="colorSecondary">#424242</color>
+    <color name="colorSecondaryLight">#6d6d6d</color>
+    <color name="colorRealTransparentSecondary">#7F424242</color>
+
+    <color name="orange">#FF8333</color>
+    <color name="blueLight">#66a3ff</color>
+    <color name="blue">#4d94ff</color>
+    <color name="blueDark">#3700B3</color>
+    <color name="grey">#a6a6a6 </color>
+    <color name="white">#FFFFFF </color>
+    <color name="red">#EF5350</color>
+</resources>

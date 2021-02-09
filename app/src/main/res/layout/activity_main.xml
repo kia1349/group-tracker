@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.grouptracker.Main.Authentication.MainActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:scaleX="2"
+        android:scaleY="2"
+        android:src="@mipmap/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/app_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/logo"
+        android:text="Group Hub"
+        android:textAlignment="center"
+        android:textColor="@color/colorSecondary"
+        android:textSize="44sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:id="@+id/buttons"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:clipToPadding="false"
+        android:layout_centerInParent="true">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/use_email_button"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="Sign in with Email"
+        android:textAllCaps="false"
+        android:textColor="@color/colorSecondary"
+        android:textSize="15sp"
+        app:icon="@drawable/ic_email_white"
+        app:iconPadding="0dp"
+        app:iconSize="30dp"
+        app:iconTint="@null"
+        android:visibility="gone"
+        app:iconTintMode="add"
+        style="@style/Widget.MaterialComponents.Button.Icon"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/use_google_button"
+        android:layout_width="300dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:backgroundTint="#ff8a80"
+        android:text="Sign in with Google"
+        android:textAllCaps="false"
+        android:textColor="@color/colorSecondary"
+        android:textSize="15sp"
+        app:icon="@drawable/ic_google"
+        app:iconPadding="0dp"
+        app:iconTint="@null"
+        android:visibility="gone"
+        app:iconTintMode="add"
+        app:iconSize="30dp"
+        style="@style/Widget.MaterialComponents.Button.Icon"/>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/use_facebook_button"
+            android:layout_width="300dp"
+            android:layout_height="65dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:backgroundTint="@color/blueLight"
+            android:layout_marginTop="20dp"
+            android:text="Sign in with Facebook"
+            android:textAllCaps="false"
+            android:textColor="@color/colorSecondary"
+            android:textSize="15sp"
+            app:icon="@drawable/ic_facebook"
+            app:iconPadding="0dp"
+            app:iconTint="@null"
+            android:visibility="gone"
+            app:iconTintMode="add"
+            app:iconSize="30dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/grant_permissions_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:background="@drawable/rounded_shape"
+            app:backgroundTint="@color/colorSecondary"
+            android:textAllCaps="true"
+            android:text="Request permissions"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:icon="@drawable/ic_reload_black"
+            app:iconPadding="5dp"
+            android:visibility="gone"
+            app:iconTint="@null"
+            app:iconTintMode="add"
+            app:iconSize="30dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/check_permissions_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:background="@drawable/rounded_shape"
+            app:backgroundTint="@color/colorSecondary"
+            android:textAllCaps="true"
+            android:text="Check permissions"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_marginTop="15dp"
+            app:icon="@drawable/ic_check_black_24dp"
+            app:iconPadding="5dp"
+            android:visibility="gone"
+            app:iconTint="@null"
+            app:iconTintMode="add"
+            app:iconSize="30dp"
+            style="@style/Widget.MaterialComponents.Button.Icon"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/updateProgressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:drawingCacheQuality="high"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDrawable="@mipmap/ic_launcher_foreground"
+        android:indeterminateDuration="2000"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>
