@@ -6,7 +6,7 @@ GroupTracker is an Android application for sharing and monitoring location of fa
 The user can easily start/stop the location service, add users & groups, add geofences, edit profile, chat with group and more.
 
 ## Screenshots
-![Alt text](images/AuthActivity.jpg?raw=true "Authentication")
+![image](images/AuthActivity.jpg?raw=true "Authentication")
 ![Alt text](images/DrwerMenu.jpg?raw=true "Navigation Drawer")
 ![Alt text](images/groupCode.jpg?raw=true "Group Code")
 ![Alt text](images/joinGroup.jpg?raw=true "Join Group")
