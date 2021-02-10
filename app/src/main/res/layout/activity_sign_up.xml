@@ -154,7 +154,6 @@
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
-            android:onClick="signUpUser"
             android:insetBottom="0dp"
             android:fontFamily="@font/montserrat_bold"
             android:backgroundTint="@color/colorPrimary"

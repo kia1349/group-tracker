@@ -23,7 +23,7 @@
             android:title="Group Code" />
         <item
             android:id="@+id/nav_chat"
-            android:icon="@drawable/ic_timeline_black_24dp"
+            android:icon="@drawable/ic_baseline_chat_24"
             android:title="Chat" />
         <item
             android:id="@+id/nav_settings"

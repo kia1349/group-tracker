@@ -190,6 +190,7 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseReference user_locations;
     private DatabaseReference group_reference;
     private APIService apiService;
+    private FirebaseDatabase mDatabase;
 
     // FRAGMENTS
     FragmentManager fragmentManager;
@@ -350,14 +351,14 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void replaceChatFragment() {
-        Log.d("MapsActivity-codeFrag", "replacing fragment with Code Fragment");
-        CodeFragment codeFragment = CodeFragment.newInstance();
+        Log.d("MapsActivity-chatFrag", "replacing fragment with Chat Fragment");
+        ChatFragment chatFragment = ChatFragment.newInstance();
         Bundle bundle = new Bundle();
         bundle.putSerializable(getString(R.string.intent_group), group);
-        codeFragment.setArguments(bundle);
+        chatFragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container_fragment, codeFragment, "CodeFragment");
+        transaction.replace(R.id.container_fragment, chatFragment, "ChatFragment");
         transaction.addToBackStack("CodeFragment");
         transaction.commit();
     }
@@ -704,6 +705,10 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+        switch (requestCode) {
+            case 0:
+                break;
+        }
     }
 
     ////////////////////////////////////////////////////// SETUP //////////////////////////////////////////////////////////
@@ -805,7 +810,6 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
             userLocation.setUser(user);
             ((UserClient)(getApplicationContext())).setUser(user);
             fillDrawerWithInfo(user);
-            updateToken(firebaseUser);
             getLastKnownLocation();
             getGroups();
             getPlaces();
@@ -999,72 +1003,13 @@ public class MapsActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
-        EventBus.getDefault().unregister(this);
-        signOut();
         super.onStop();
     }
 
-    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onLocationEvent(LocationEvent event) {
-        userLocation = event.userLocation;
-        /*
-        if(place.getGeoAdmin().equals(user.getUserid()) && place.getAddress() == null && userLocation.getAddress() != null) {
-            setFirstGeofence();
-        }
-         */
-        //Toast.makeText(getApplicationContext(), userLocation.getAddress(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGeofenceEvent(GeofenceEvent event) {
-        Place p = event.place;
-
-        DocumentReference groupRef = mDb
-                .collection(getString(R.string.collection_groups))
-                .document(group.getGroup_id())
-                .collection(getString(R.string.collection_group_places))
-                .document(p.getPlace_id());
-
-        DocumentReference userRef = mDb
-                .collection(getString(R.string.collection_users))
-                .document(user.getUserid())
-                .collection(getString(R.string.collection_group_places))
-                .document(p.getPlace_id());
-
-        groupRef.set(p);
-        userRef.set(p);
-
-
-        /*
-        if(place.getGeoAdmin().equals(user.getUserid()) && place.getAddress() == null && userLocation.getAddress() != null) {
-            setFirstGeofence();
-        }
-         */
-        //Toast.makeText(getApplicationContext(), userLocation.getAddress(), Toast.LENGTH_SHORT).show();
-    }
-
-
-/*
-    private void setFirstGeofence() {
-        DocumentReference placeRef = mDb
-                .collection(getString(R.string.collection_groups))
-                .document(group.getGroup_id())
-                .collection(getString(R.string.collection_group_places))
-                .document(place.getPlace_id());
-
-        place.setAddress(userLocation.getAddress());
-        place.setNotifications(false);
-        place.setPlace_latLng(new com.example.grouptracker.Model.LatLng(userLocation.getGeo_point().getLongitude(), userLocation.getGeo_point().getLatitude()));
-
-        placeRef.set(place);
-    }
-*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

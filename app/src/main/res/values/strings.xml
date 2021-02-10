@@ -9,7 +9,7 @@
     <!-- Firestore Strings -->
     <string name="collection_users">Users</string>
     <string name="collection_groups">Groups</string>
-    <string name="collection_chat_messages">Chat Messages</string>
+    <string name="collection_chat_messages">messages</string>
     <string name="collection_group_user_list">User List</string>
     <string name="collection_group_list">Group List</string>
     <string name="collection_user_locations">User Locations</string>

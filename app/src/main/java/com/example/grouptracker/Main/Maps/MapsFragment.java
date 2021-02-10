@@ -10,7 +10,9 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -44,6 +46,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.grouptracker.Adapters.MyClusterManagerRenderer;
 import com.example.grouptracker.Adapters.UsersAdapter;
 import com.example.grouptracker.Model.ClusterMarker;
 import com.example.grouptracker.Model.Group;
@@ -56,12 +59,14 @@ import com.example.grouptracker.R;
 import com.example.grouptracker.Utils.CircleBubbleTransformation;
 import com.example.grouptracker.Utils.GeofenceHelper;
 import com.example.grouptracker.Utils.UserClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -127,6 +132,7 @@ public class MapsFragment extends Fragment implements
     private String GEOFENCE_ID = "SOME_GEOFENCE_ID";
 
     // Layout
+    private CameraPosition position;
     private MapView mapView;
     private RelativeLayout mapContainer;
     private UserLocation userLocation;
@@ -193,32 +199,15 @@ public class MapsFragment extends Fragment implements
             @Override
             public void run() {
                 setUpClustersNoPositioning();
-                stopProgressAnimation();
             }
         }, 1000);
-        final Handler handler1 = new Handler(Looper.getMainLooper());
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setUpClustersNoPositioning();
-            }
-        }, 2000);
-        final Handler handler2 = new Handler(Looper.getMainLooper());
-        handler2.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setUpClustersNoPositioning();
-            }
-        }, 3000);
     }
 
     private void getIncomingGroup() {
         if (getArguments() != null) {
-            startProgressAnimation();
             user = (User) getArguments().getSerializable(getString(R.string.intent_user));
             group = (Group) getArguments().getSerializable(getString(R.string.intent_group));
             userLocation = (UserLocation) getArguments().getSerializable(getString(R.string.intent_user_locations));
-            Log.d("MapsFragment", "getIncomingGroup: Got arguments!");
         }
     }
 
@@ -740,7 +729,18 @@ public class MapsFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+        startUserLocationsRunnable();
+        setUpMap();
         mapView.onResume();
+        if (position != null) {
+            gMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+            position = null;
+        }
+    }
+
+    private void setUpMap() {
+        MapsInitializer.initialize(getActivity());
+        addMapMarkers();
     }
 
     @Override
@@ -785,8 +785,10 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onPause() {
-        super.onPause();
         mapView.onPause();
+        super.onPause();
+        position = gMap.getCameraPosition();
+        gMap = null;
     }
 
     @Override
@@ -804,22 +806,17 @@ public class MapsFragment extends Fragment implements
         Log.d("MapsFragment", "onMapReady: started");
         gMap = googleMap;
         gMap.getUiSettings().setMapToolbarEnabled(false);
-        try {
+        if(gMap != null) {
             moveItems();
-        } catch (Exception e) {
-
+            gMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    setUpClusters();
+                }
+            });
+            Log.d("MapsFragment", "onMapReady: before setView");
+            setUpClustersNoPositioning();
         }
-        if(userLocation.getGeo_point() != null) {
-            setCameraViewFromLatLng(new LatLng(userLocation.getGeo_point().getLatitude(), userLocation.getGeo_point().getLongitude()));
-        }
-        gMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-                setUpClusters();
-            }
-        });
-        Log.d("MapsFragment", "onMapReady: before setView");
-        setUpClustersNoPositioning();
     }
 
     public void setUpClusters() {
@@ -838,7 +835,6 @@ public class MapsFragment extends Fragment implements
             clusterManager.setOnClusterItemClickListener(this);
             clusterManager.setOnClusterItemInfoWindowClickListener(this);
             gMap.setOnPolylineClickListener(this);
-            gMap.setOnMapLongClickListener(this);
             gMap.setOnMapClickListener(this);
             gMap.setOnCameraMoveListener(this);
             clusterManager.cluster();
@@ -870,7 +866,6 @@ public class MapsFragment extends Fragment implements
 
     private void addMapMarkers() {
         for (UserLocation userLocation : userLocations) {
-            Log.d(TAG, "addMapMarkers: location: " + userLocation.getGeo_point().toString());
             try {
                 String snippet = "";
                 if (userLocation.getUser().getUserid().equals(FirebaseAuth.getInstance().getUid())) {
@@ -973,7 +968,6 @@ public class MapsFragment extends Fragment implements
                         if (task.isSuccessful()) {
                             final UserLocation updatedUserLocation = task.getResult().toObject(UserLocation.class);
                             userLocation = updatedUserLocation;
-
                             // update the location
                             for (int i = 0; i < clusterMarkers.size(); i++) {
                                 try {
@@ -1515,226 +1509,5 @@ public class MapsFragment extends Fragment implements
         }
     }
 
-    public class MyClusterManagerRenderer extends DefaultClusterRenderer<ClusterMarker> {
 
-        private IconGenerator iconGenerator = new IconGenerator(getActivity().getApplicationContext());
-        private IconGenerator clusterIconGenerator = new IconGenerator(getActivity().getApplicationContext());
-        private ImageView imageView;
-        private CircleImageView clusterImageView;
-        private final int dimensions;
-        private Bitmap icon;
-        private float maxZoomLevel;
-        private final float zoomOffset = 0f;
-
-        public MyClusterManagerRenderer(Context context, GoogleMap googleMap,
-                                        ClusterManager<ClusterMarker> clusterManager) {
-
-            super(context, googleMap, clusterManager);
-
-            // initialize cluster item icon generator
-            View multiProfile = getLayoutInflater().inflate(R.layout.multi_profile, null);
-            clusterIconGenerator.setContentView(multiProfile);
-            clusterImageView = (CircleImageView) multiProfile.findViewById(R.id.image);
-            iconGenerator.setBackground(getActivity().getResources().getDrawable(R.color.transparent));
-            imageView = new ImageView(context.getApplicationContext());
-            dimensions = (int) context.getResources().getDimension(R.dimen.custom_marker_image);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(dimensions, dimensions));
-            int padding = (int) context.getResources().getDimension(R.dimen.custom_marker_padding);
-            imageView.setPadding(padding, padding, padding, padding);
-            iconGenerator.setContentView(imageView);
-            maxZoomLevel = gMap.getMaxZoomLevel() - zoomOffset;
-        }
-
-        /**
-         * Rendering of the individual ClusterItems
-         * @param item
-         * @param markerOptions
-         */
-        @Override
-        protected void onBeforeClusterItemRendered(ClusterMarker item, MarkerOptions markerOptions) {
-            markerOptions
-                    .icon(getItemIcon(item))
-                    .title(item.getTitle())
-                    .snippet(item.getSnippet());
-        }
-
-        protected void onBeforeClusterRendered(ClusterMarker marker, MarkerOptions markerOptions) {
-            markerOptions
-                    .icon(getClusterIcon(marker));
-        }
-
-        @Override
-        protected void onClusterRendered(@NonNull final Cluster<ClusterMarker> cluster, @NonNull final Marker marker) {
-            /*
-            final List<Drawable> profilePhotos = new ArrayList<>(Math.min(4, cluster.getSize()));
-            final Bitmap dummyBitmap = null;
-            Drawable drawable;
-            final int clusterSize = cluster.getSize();
-            final int[] count = {0};
-
-            for (ClusterMarker item : cluster.getItems()) {
-                // Draw 4 at most.
-                if (profilePhotos.size() == 4) break;
-                try {
-                    Picasso.get().load(item.getIconPicture())
-                            .into(clusterImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Drawable photo = clusterImageView.getDrawable();
-                                    photo.setBounds(0, 0, dimensions, dimensions);
-                                    profilePhotos.add(photo);
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-
-                                }
-                            });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-            multiDrawable.setBounds(0, 0, dimensions, dimensions);
-
-            clusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = clusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
-             */
-
-        }
-
-        private BitmapDescriptor getClusterIcon(ClusterMarker marker) {
-            Picasso.get()
-                    .load(Uri.parse(marker.getIconPicture()))
-                    .into(imageView);
-
-            iconGenerator.setContentView(imageView);
-            Bitmap icon = iconGenerator.makeIcon();
-            return BitmapDescriptorFactory.fromBitmap(icon);
-            /*
-            final List<Drawable> profilePhotos = new ArrayList<>(Math.min(4, cluster.getSize()));
-
-            for (ClusterMarker p : cluster.getItems()) {
-                // Draw 4 at most.
-                if (profilePhotos.size() == 4) break;
-                try {
-                    Picasso.get().load(p.getIconPicture())
-                            .into(clusterImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Drawable photo = clusterImageView.getDrawable();
-                                    photo.setBounds(0, 0, dimensions, dimensions);
-                                    profilePhotos.add(photo);
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-
-                                }
-                            });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-            multiDrawable.setBounds(0, 0, dimensions, dimensions);
-
-            clusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = clusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            return BitmapDescriptorFactory.fromBitmap(icon);
-             */
-        }
-
-        private BitmapDescriptor getItemIcon(final ClusterMarker item) {
-            Picasso.get()
-                    .load(Uri.parse(item.getIconPicture()))
-                    .placeholder(R.mipmap.default_profile_male)
-                    .resize(200, 200)
-                    .centerCrop()
-                    .transform(new CircleBubbleTransformation())
-                    .into(new com.squareup.picasso.Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            imageView.setImageBitmap(bitmap);
-                            iconGenerator.setContentView(imageView);
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
-                        }
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        }
-                    });
-
-            iconGenerator.setContentView(imageView);
-            icon = iconGenerator.makeIcon();
-            return BitmapDescriptorFactory.fromBitmap(icon);
-        }
-
-        @Override
-        public void setOnClusterInfoWindowClickListener(ClusterManager.OnClusterInfoWindowClickListener<ClusterMarker> listener) {
-            super.setOnClusterInfoWindowClickListener(listener);
-        }
-
-        @Override
-        protected void onClusterItemUpdated(@NonNull ClusterMarker item, @NonNull Marker marker) {
-            marker.setIcon(getItemIcon(item));
-            marker.setTitle(item.getTitle());
-            marker.setSnippet(item.getSnippet());
-        }
-
-        @Override
-        protected boolean shouldRenderAsCluster(Cluster cluster) {
-            //boolean wouldCluster = super.shouldRenderAsCluster(cluster);
-
-            // determine if when we want to cluster based on zoomLevel
-            //if(wouldCluster) {
-            //    wouldCluster = currentZoom < maxZoomLevel;
-            //}
-            //if(!shouldShowCluster && cluster.getSize() > 1) {
-            //    return false;
-            //}
-            return cluster.getSize() > 1;
-        }
-
-        /**
-         * Update the GPS coordinate of a ClusterItem
-         * @param clusterMarker
-         */
-        public void setUpdateMarker(ClusterMarker clusterMarker) {
-            Marker marker = getMarker(clusterMarker);
-            if (marker != null) {
-                marker.setPosition(clusterMarker.getPosition());
-            }
-        }
-/*
-        private BitmapDescriptor getClusterIcon(Cluster<ClusterMarker> cluster) {
-            List<Drawable> profilePhotos = new ArrayList<>(Math.min(4, cluster.getSize()));
-            int width = 50;
-            int height = 50;
-            URL url = null;
-            Bitmap bmp;
-
-            for(ClusterMarker item : cluster.getItems()) {
-                if(profilePhotos.size() == 4) break;
-                try{
-                    url = new URL(item.getUser().getImageUri());
-                    bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-            multiDrawable.setBounds(0, 0, width, height);
-
-            clusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = clusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            return BitmapDescriptorFactory.fromBitmap(icon);
-        }
- */
-    }
 }

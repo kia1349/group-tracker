@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,12 +24,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.grouptracker.Main.Maps.MapsActivity;
+import com.example.grouptracker.Model.Group;
 import com.example.grouptracker.Model.User;
 import com.example.grouptracker.R;
 import com.example.grouptracker.Utils.Common;
+import com.example.grouptracker.Utils.UserClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,26 +41,50 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+
+import java.io.Serializable;
 
 
 public class SignInActivity extends AppCompatActivity {
 
-    public static final String TAG ="LoginActivity";
+    public static final String TAG ="SignInActivity";
 
-    private TextInputLayout mEmailInput, mPasswordInput; // For input fields
-    FirebaseAuth auth; // For authenticationg with Firebase
-    FirebaseUser user; // For getting user details from firebase
+    private TextInputLayout mEmailInput, mPasswordInput;
+    FirebaseAuth auth;
+    FirebaseUser firebaseUser;
     DatabaseReference user_information;
     ProgressDialog pd;
     Toolbar toolbar;
+    private FirebaseFirestore mDb;
+    User user;
+    Group group;
+    private String admin;
+    private String name;
+    private String surrname;
+    private String email;
+    private String gender;
+    private String isSharing;
+    private String imageUri;
+    private String userId;
+    private String date;
+    private String family;
+    private String family_name;
+    private int locationUpdateInterval;
+    private String title;
+    private String code;
+    private String groupId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,52 +92,10 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         auth = FirebaseAuth.getInstance();
+        mDb = FirebaseFirestore.getInstance();
+
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         getWindow().setStatusBarColor(getResources().getColor(R.color.colorSecondaryLight));
-
-        /*
-        BiometricManager biometricManager = BiometricManager.from(this);
-        switch(biometricManager.canAuthenticate()) {
-            case BiometricManager.BIOMETRIC_SUCCESS:
-                Toast.makeText(getApplicationContext(), "You can use the Fingerprint Sensor to sign in", Toast.LENGTH_SHORT).show();
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
-                Toast.makeText(getApplicationContext(), "The device doesn't have a fingerprint sensor", Toast.LENGTH_SHORT).show();
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-                Toast.makeText(getApplicationContext(), "The fingerprint sensor is currently unavailable", Toast.LENGTH_SHORT).show();
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
-                Toast.makeText(getApplicationContext(), "Your device doesn't have a fingerprint saved, check security settings", Toast.LENGTH_SHORT).show();
-                break;
-
-        }
-        Executor executor = ContextCompat.getMainExecutor(this);
-        final BiometricPrompt biometricPrompt = new BiometricPrompt(SignInActivity.this, executor, new BiometricPrompt.AuthenticationCallback() {
-            @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                super.onAuthenticationError(errorCode, errString);
-            }
-
-            @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                super.onAuthenticationSucceeded(result);
-                Toast.makeText(getApplicationContext(), "Login success with fingerprint!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAuthenticationFailed() {
-                super.onAuthenticationFailed();
-            }
-        });
-
-        final BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Sign In")
-                .setDescription("Use your fingerprint to sign in")
-                .setNegativeButtonText("Cancel")
-                .build();
-
-         */
 
         mEmailInput = findViewById(R.id.emailLoginInput);
         mPasswordInput = findViewById(R.id.passLoginInput);
@@ -118,7 +104,15 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn();
-                //biometricPrompt.authenticate(promptInfo);
+            }
+        });
+
+        mPasswordInput.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                mPasswordInput.setError("");
+                mPasswordInput.setErrorEnabled(false);
+                return false;
             }
         });
 
@@ -159,20 +153,151 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    private void getUserDetails() {
+        name = user.getName();
+        surrname = user.getSurrname();
+        email = user.getEmail();
+        gender = user.getGender();
+        isSharing = user.getIsSharing();
+        imageUri = user.getImageUri();
+        userId = user.getUserid();
+        date = user.getDate();
+        family = user.getFamily();
+        family_name = user.getFamily_name();
+        locationUpdateInterval = user.getLocationUpdateInterval();
+    }
+
+    private void getUser() {
+        final DocumentReference userDocumentReference = mDb
+                .collection(getString(R.string.collection_users))
+                .document(firebaseUser.getUid());
+
+        userDocumentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    user = task.getResult().toObject(User.class);
+                    getUserDetails();
+                    getGroupDetails();
+                    ((UserClient) getApplicationContext()).setUser(user);
+                    goToMapsActivity();
+                }
+            }
+        });
+    }
+
+    public void goToMapsActivity() {
+        Intent intent = new Intent(SignInActivity.this, MapsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", (Serializable) user);
+        bundle.putSerializable("group", (Serializable) group);
+        //bundle.putSerializable("place", (Serializable) home);
+        //bundle.putSerializable("groupsList", (Serializable) groupsList);
+        //bundle.putSerializable("userPlaces", (Serializable) placeList);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
+    }
+
+    private void getGroupDetails() {
+        final DocumentReference groupDocumentReference = mDb
+                .collection(getString(R.string.collection_groups))
+                .document(user.getFamily());
+
+        groupDocumentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()) {
+                    group = documentSnapshot.toObject(Group.class);
+                    getGroup();
+                }
+            }
+        });
+    }
+
+    private void getGroup() {
+        admin = group.getGroup_admin();
+        title = group.getGroup_title();
+        code = group.getGroup_code();
+        groupId = group.getGroup_id();
+    }
+
+
     public void signIn() {
+        pd.show();
         String email = mEmailInput.getEditText().getText().toString();
         String pass = mPasswordInput.getEditText().getText().toString();
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mEmailInput.setError("Invalid Email");
-            mEmailInput.setFocusable(true);
-        } else if(pass.length() < 6){
+
+        if(email.equals("")) {
+            pd.dismiss();
+            mPasswordInput.setError("");
+            mPasswordInput.setErrorEnabled(false);
+            mEmailInput.setError("Email is required!");
+            mEmailInput.requestFocus();
+        } else if(pass.equals("")) {
+            pd.dismiss();
             mEmailInput.setError("");
             mEmailInput.setErrorEnabled(false);
-            mPasswordInput.setError("Invalid Password");
-            mPasswordInput.setFocusable(true);
+            mPasswordInput.setError("Password is required!");
+            mPasswordInput.requestFocus();
         } else {
-            login(email, pass);
+            mEmailInput.setError("");
+            mEmailInput.setErrorEnabled(false);
+            mPasswordInput.setError("");
+            mPasswordInput.setErrorEnabled(false);
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, pass)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                firebaseUser = task.getResult().getUser();
+                                if (!firebaseUser.isEmailVerified()) {
+                                    pd.dismiss();
+                                    Toast.makeText(getApplicationContext(), "Email is not verified yet, check your inbox.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    getUser();
+                                }
+                            } else {
+                                String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
+
+                                switch (errorCode) {
+                                    case "ERROR_INVALID_EMAIL":
+                                        mEmailInput.setError("The email address is badly formatted.");
+                                        mEmailInput.requestFocus();
+                                        break;
+
+                                    case "ERROR_WRONG_PASSWORD":
+                                        mPasswordInput.setError("The password is invalid.");
+                                        mPasswordInput.requestFocus();
+                                        mPasswordInput.getEditText().setText("");
+                                        break;
+
+                                    case "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
+                                        Toast.makeText(SignInActivity.this, "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.", Toast.LENGTH_LONG).show();
+                                        break;
+
+                                    case "ERROR_CREDENTIAL_ALREADY_IN_USE":
+                                        Toast.makeText(SignInActivity.this, "This credential is already associated with a different user account.", Toast.LENGTH_LONG).show();
+                                        break;
+
+                                    case "ERROR_USER_DISABLED":
+                                        Toast.makeText(SignInActivity.this, "The user account has been disabled by an administrator.", Toast.LENGTH_LONG).show();
+                                        break;
+
+                                    case "ERROR_USER_TOKEN_EXPIRED":
+                                        Toast.makeText(SignInActivity.this, "The user\\'s credential is no longer valid. The user must sign in again.", Toast.LENGTH_LONG).show();
+                                        break;
+
+                                    case "ERROR_USER_NOT_FOUND":
+                                        mEmailInput.setError("User with this email does not exist.");
+                                        mEmailInput.requestFocus();
+                                        break;
+                                }
+                            }
+                        }
+                    });
         }
+        pd.dismiss();
     }
 
     public void showRecoverPasswordDialog(View v) {
@@ -243,59 +368,10 @@ public class SignInActivity extends AppCompatActivity {
         startActivity(myIntent);
     }
 
-    public void login(String email, String pass) {
-        pd.show();
-        auth.signInWithEmailAndPassword(email, pass)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            pd.dismiss();
-                            //Toast.makeText(getApplicationContext(), "User logged in successfully", Toast.LENGTH_LONG).show();
-                            final FirebaseUser firebaseUser = auth.getCurrentUser();
-                            if(firebaseUser.isEmailVerified()) {
-                                user_information = FirebaseDatabase.getInstance().getReference(Common.USER_INFORMATION).child(firebaseUser.getUid());
-                                user_information.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        Common.loggedUser = dataSnapshot.child(firebaseUser.getUid()).getValue(User.class);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    }
-                                });
-                                updateToken(firebaseUser);
-                                Log.d(TAG, "signInWithCredential:success");
-                                Toast.makeText(SignInActivity.this, "Logged in as: " + firebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
-                                setupUi();
-                            } else {
-                                pd.dismiss();
-                                Toast.makeText(getApplicationContext(), "Email is not verified yet", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                pd.dismiss();
-                Toast.makeText(getApplicationContext(), ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     @Override
     public void onBackPressed() {
         Intent previous = new Intent(SignInActivity.this, MainActivity.class);
         startActivity(previous);
-    }
-
-    private void setupUi(){
-        Intent intent = new Intent(SignInActivity.this, MapsActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     private void updateToken(final FirebaseUser firebaseUser) {

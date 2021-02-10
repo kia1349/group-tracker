@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity{
     private Button acceptBtn;
     private TextView popupTitle;
     private LinearLayout popupMsg;
+    private boolean isPopup = false;
 
     // GOOGLE
     private GoogleSignInClient googleSignInClient;
@@ -226,7 +227,26 @@ public class MainActivity extends AppCompatActivity{
         // progress animation
         progressBar = findViewById(R.id.updateProgressBar);
 
-        Init();
+        setupWindow();
+        setupLogoAnimation();
+        if(areAllPermissionsGranted()) {
+            showAuthenticationButtons();
+            checkBatteryOptimization();
+        } else if(isLocationPermissionGranted() && isStoragePermissionGranted() && !isBackgroundPermissionGranted()) {
+            showAuthenticationButtons();
+            ShowBackgroundLocationAlert();
+        } else if(!isStoragePermissionGranted()) {
+            showPermissionButtons();
+            ShowPermissionsPopup();
+        } else if(isStoragePermissionGranted() && !isLocationPermissionGranted()) {
+            showPermissionButtons();
+            ShowPermissionsPopup();
+        } else {
+            showPermissionButtons();
+            ShowPermissionsPopup();
+        }
+
+        setupFirebaseAuth();
     }
 
     ////////////////////////////////////////// SETUP //////////////////////////////////////////
@@ -260,30 +280,7 @@ public class MainActivity extends AppCompatActivity{
         progressBar.setVisibility(View.GONE);
     }
 
-    private void Init() {
-        setupWindow();
-        setupLogoAnimation();
-        if(areAllPermissionsGranted()) {
-            showAuthenticationButtons();
-            checkBatteryOptimiztion();
-        } else if(isLocationPermissionGranted() && isStoragePermissionGranted() && !isBackgroundPermissionGranted()) {
-            showAuthenticationButtons();
-            ShowBackgroundLocationAlert();
-        } else if(!isStoragePermissionGranted()) {
-            showPermissionButtons();
-            ShowPermissionsPopup();
-        } else if(isStoragePermissionGranted() && !isLocationPermissionGranted()) {
-            showPermissionButtons();
-            ShowPermissionsPopup();
-        } else {
-            showPermissionButtons();
-            ShowPermissionsPopup();
-        }
-
-        setupFirebaseAuth();
-    }
-
-    private void checkBatteryOptimiztion() {
+    private void checkBatteryOptimization() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String packageName = getApplicationContext().getPackageName();
             PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
@@ -398,9 +395,10 @@ public class MainActivity extends AppCompatActivity{
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 auth = firebaseAuth;
                 firebaseUser = auth.getCurrentUser();
-                if (firebaseUser != null && user != null) {
-                    // User is logged in
-                    //goToMapsActivity(user);
+                if (firebaseUser != null) {
+                    if(!isPopup) getUser();
+                } else {
+                    showAuthenticationButtons();
                 }
             }
         };
@@ -578,10 +576,6 @@ public class MainActivity extends AppCompatActivity{
         title = surrname + " Family";
         group = new Group(title, groupId, admin, code);
         user.setFamily(groupId);
-        usersList.add(user);
-        groupsList.add(group);
-        memberList.add(admin);
-        groupList.add(groupId);
     }
 
     private void uploadGroup() {
@@ -637,7 +631,7 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            firebaseUser = auth.getCurrentUser();
+                            firebaseUser = task.getResult().getUser();
                             getUser();
                             Log.d("MainActivity-GoogleAuth", "SUCCESSFUL LOGIN WITH GOOGLE");
                         }
@@ -657,7 +651,7 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            firebaseUser = auth.getCurrentUser();
+                            firebaseUser = task.getResult().getUser();
                             getUser();
                             Log.d("MainActivity-FbAuth", "SUCCESSFUL LOGIN WITH FACEBOOK");
                         }
@@ -713,6 +707,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void ShowPermissionsPopup() {
+        isPopup = true;
         permissionsDialog.setContentView(R.layout.dialog_important_permissions);
         closePopupBtn = permissionsDialog.findViewById(R.id.closePopupBtn);
         acceptBtn = permissionsDialog.findViewById(R.id.popupBtn);
@@ -763,6 +758,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void ShowBackgroundLocationAlert() {
+        isPopup = true;
         permissionsDialog.setContentView(R.layout.dialog_background_location_permission);
         closePopupBtn = permissionsDialog.findViewById(R.id.closePopupBtn);
         acceptBtn = permissionsDialog.findViewById(R.id.popupBtn);
@@ -795,6 +791,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void ShowBatteryOptimizationAlert() {
+        isPopup = true;
         permissionsDialog.setContentView(R.layout.dialog_battery_permission);
         closePopupBtn = permissionsDialog.findViewById(R.id.closePopupBtn);
         acceptBtn = permissionsDialog.findViewById(R.id.popupBtn);
@@ -825,126 +822,32 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case CODE_STORAGE_PERMISSION: {
-                if ((grantResults.length > 0)
-                        && isStoragePermissionGranted()) {
-                    storagePermission = true;
-                } else {
-                    storagePermission = false;
-                    showPermissionButtons();
-                }
-            }
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 HidePermissionsPopup();
                 showAuthenticationButtons();
             }
-            case CODE_LOCATION_PERMISSION: {
-                if (Build.VERSION.SDK_INT >= 29) {
-                    if ((grantResults.length > 0)
-                            && isLocationPermissionGranted() && isBackgroundPermissionGranted()) {
-                        locationPermission = true;
-                        backgroundPermission = true;
-                    } else if ((grantResults.length > 0)
-                            && isLocationPermissionGranted() && !isBackgroundPermissionGranted()) {
-                        locationPermission = true;
-                        backgroundPermission = false;
-                        ShowBackgroundLocationAlert();
-                        showAuthenticationButtons();
-                    } else {
-                        locationPermission = false;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
-                        showPermissionButtons();
-                    }
-                } else {
-                    if ((grantResults.length > 0)
-                            && isLocationPermissionGranted() && isBackgroundPermissionGranted()) {
-                        locationPermission = true;
-                        backgroundPermission = true;
-                    } else {
-                        locationPermission = false;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
-                        showPermissionButtons();
-                    }
-                }
-            }
             case CODE_ALL_PERMISSIONS: {
                 if (Build.VERSION.SDK_INT >= 29) {
-                    if ((grantResults.length > 0)
-                            && areAllPermissionsGranted() && isBackgroundPermissionGranted()) {
-                        allPermissions = true;
-                        storagePermission = true;
-                        locationPermission = true;
-                        backgroundPermission = true;
+                    if ((grantResults.length > 0) && areAllPermissionsGranted()) {
                         HidePermissionsPopup();
                         showAuthenticationButtons();
-                    } else if ((grantResults.length > 0)
-                            && isLocationPermissionGranted() && isStoragePermissionGranted() && !isBackgroundPermissionGranted()) {
-                        allPermissions = false;
-                        storagePermission = true;
-                        locationPermission = true;
-                        backgroundPermission = false;
+                    } else if ((grantResults.length > 0) && !isLocationPermissionGranted()) {
+                        showPermissionButtons();
+                        ShowPermissionsPopup();
+                    } else if ((grantResults.length > 0) && !isBackgroundPermissionGranted()){
                         showAuthenticationButtons();
                         ShowBackgroundLocationAlert();
-                    } else if((grantResults.length > 0)
-                            && isStoragePermissionGranted() && !isLocationPermissionGranted()){
-                        allPermissions = false;
-                        locationPermission = false;
-                        storagePermission = true;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
-                        showPermissionButtons();
-                    } else if((grantResults.length > 0)
-                            && !isStoragePermissionGranted() && isLocationPermissionGranted()) {
-                        allPermissions = false;
-                        locationPermission = true;
-                        storagePermission = false;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
-                        showPermissionButtons();
-                    } else if((grantResults.length > 0)
-                            && !areAllPermissionsGranted()) {
-                        allPermissions = false;
-                        locationPermission = false;
-                        storagePermission = false;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
-                        showPermissionButtons();
                     }
                 } else {
-                    if ((grantResults.length > 0)
-                            && areAllPermissionsGranted() && isBackgroundPermissionGranted()) {
-                        allPermissions = true;
-                        storagePermission = true;
-                        locationPermission = true;
-                        backgroundPermission = true;
+                    if ((grantResults.length > 0) && areAllPermissionsGranted()) {
                         HidePermissionsPopup();
                         showAuthenticationButtons();
-                    } else if((grantResults.length > 0)
-                            && isStoragePermissionGranted() && !isLocationPermissionGranted()){
-                        allPermissions = false;
-                        locationPermission = false;
-                        storagePermission = true;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
+                    } else if((grantResults.length > 0) && !isLocationPermissionGranted()){
                         showPermissionButtons();
-                    } else if((grantResults.length > 0)
-                            && !isStoragePermissionGranted() && isLocationPermissionGranted()) {
-                        allPermissions = false;
-                        locationPermission = true;
-                        storagePermission = false;
-                        backgroundPermission = false;
+                        ShowPermissionsPopup();
+                    } else {
                         HidePermissionsPopup();
-                        showPermissionButtons();
-                    } else if((grantResults.length > 0)
-                            && !areAllPermissionsGranted()) {
-                        allPermissions = false;
-                        locationPermission = false;
-                        storagePermission = false;
-                        backgroundPermission = false;
-                        HidePermissionsPopup();
-                        showPermissionButtons();
+                        showAuthenticationButtons();
                     }
                 }
             }
@@ -984,10 +887,8 @@ public class MainActivity extends AppCompatActivity{
                     != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
-            return true;
-        } else {
-            return true;
         }
+        return true;
     }
 
     private boolean areAllPermissionsGranted() {
@@ -1056,28 +957,6 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void requestStoragePermission() {
-        if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE))
-        {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[] {
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                    },
-                    CODE_STORAGE_PERMISSION
-            );
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[] {
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                    },
-                    CODE_STORAGE_PERMISSION
-            );
-        }
-    }
-
     private void requestLocationPermission() {
         if(Build.VERSION.SDK_INT >= 29) {
             if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) ||
@@ -1099,7 +978,7 @@ public class MainActivity extends AppCompatActivity{
                                 Manifest.permission.ACCESS_COARSE_LOCATION,
                                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
                         },
-                        CODE_LOCATION_PERMISSION
+                        CODE_ALL_PERMISSIONS
                 );
             }
         } else {
@@ -1119,7 +998,7 @@ public class MainActivity extends AppCompatActivity{
                                 Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                         },
-                        CODE_LOCATION_PERMISSION
+                        CODE_ALL_PERMISSIONS
                 );
             }
         }

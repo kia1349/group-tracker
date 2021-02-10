@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.renderscript.RenderScript;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -59,12 +60,14 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import static androidx.core.app.NotificationCompat.DEFAULT_SOUND;
+import static androidx.core.app.NotificationCompat.DEFAULT_VIBRATE;
+
 
 public class LocationService extends Service {
 
     private static final String TAG = "CurrentLocationService";
     private FusedLocationProviderClient fusedLocationClient;
-    private final static long UPDATE_INTERVAL = 4 * 1000;  /* 4 secs */
     UserLocation userLocation;
     DatabaseReference user_locations;
     public final String serviceMessage = "ServiceMessage";
@@ -74,6 +77,7 @@ public class LocationService extends Service {
     FirebaseAuth auth;
     FirebaseUser user;
     Geocoder geocoder;
+    LocationRequest locationRequest = new LocationRequest();
     User currUser;
     private GeofencingClient geofencingClient;
     private GeofenceHelper geofenceHelper;
@@ -85,12 +89,11 @@ public class LocationService extends Service {
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent ){
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
-    private void startLocationService() {
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+    private void createNotification() {
         Intent result = new Intent(getApplicationContext(), MapsActivity.class);
         PendingIntent updateIntent = PendingIntent.getActivity(
                 getApplicationContext(),
@@ -103,67 +106,64 @@ public class LocationService extends Service {
         stop.setAction(Common.ACTION_STOP_LOCATION_SERVICE);
         PendingIntent stopIntent = PendingIntent.getService(this, 0, stop, PendingIntent.FLAG_CANCEL_CURRENT);
 
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Location Service",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            notificationChannel.setDescription("This channel is used by location service");
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                getApplicationContext(),
+                CHANNEL_ID
+        );
+        builder.setChannelId(CHANNEL_ID);
+        builder.setSmallIcon(R.mipmap.ic_notification_foreground);
+        builder.setContentTitle("Background Location Service");
+        builder.setAutoCancel(true);
+        builder.setContentText("Running");
+        builder.setContentIntent(updateIntent);
+        builder.setOngoing(true);
+        builder.setSilent(true);
+        builder.addAction(android.R.drawable.ic_media_pause, "Stop", stopIntent);
+        Notification notification = builder.build();
+        startForeground(1, notification);
+    }
+
+    private void startLocationService() {
+        createNotification();
         // Create the location request to start receiving updates
-        LocationRequest locationRequestHighAccuracy = new LocationRequest();
-        locationRequestHighAccuracy.setInterval(4000);
-        locationRequestHighAccuracy.setFastestInterval(2000);
-        locationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        createLocationRequestBalanced();
 
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getLocation: stopping the location service.");
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             stopSelf();
             return;
         }
 
-        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequestHighAccuracy, locationCallback, Looper.getMainLooper());
-
-        NotificationCompat.Builder builder = null;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel = new NotificationChannel(
-                        CHANNEL_ID,
-                        "Location Service",
-                        NotificationManager.IMPORTANCE_DEFAULT
-                );
-                notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-                notificationChannel.setDescription("This channel is used by location service");
-                notificationManager.createNotificationChannel(notificationChannel);
-
-                builder = new NotificationCompat.Builder(
-                        getApplicationContext(),
-                        CHANNEL_ID
-                );
-                builder.setChannelId(CHANNEL_ID);
-                builder.setSmallIcon(R.mipmap.ic_notification_foreground);
-                builder.setContentTitle("Background Location Service");
-                //Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
-                //builder.setSound(notificationSound);
-                builder.setAutoCancel(true);
-                builder.setDefaults(NotificationCompat.DEFAULT_ALL);
-                builder.setContentText("Running");
-                builder.setContentIntent(updateIntent);
-                builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-                builder.addAction(android.R.drawable.ic_media_pause, "Stop", stopIntent);
-                Notification notification = builder.build();
-                startForeground(Common.LOCATION_SERVICE_ID, notification);
-        } else {
-            builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID);
-            builder.setChannelId(CHANNEL_ID);
-            builder.setSmallIcon(R.mipmap.ic_notification_foreground);
-            builder.setContentTitle("Background Location Service");
-            //Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
-            //builder.setSound(notificationSound);
-            builder.setAutoCancel(true);
-            builder.setDefaults(NotificationCompat.DEFAULT_ALL);
-            builder.setContentText("Running");
-            builder.setContentIntent(updateIntent);
-            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            builder.addAction(android.R.drawable.ic_media_pause, "Stop", stopIntent);
-            Notification notification = builder.build();
-            startForeground(Common.LOCATION_SERVICE_ID, notification);
-        }
+        LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
+
+    private void createLocationRequestBalanced() {
+        locationRequest
+            .setInterval(80000)
+            .setFastestInterval(40000)
+            .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+    }
+
+    private void createLocationRequestAccurate() {
+        locationRequest
+            .setInterval(10000)
+            .setFastestInterval(5000)
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -264,37 +264,13 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         auth = FirebaseAuth.getInstance();
-        setupFirebaseAuth();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         userClient = (UserClient) getApplicationContext();
-    }
-
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: started.");
-
-        authListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                    stopLocationService();
-
-                }
-                // ...
-            }
-        };
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(authListener != null) {
-            FirebaseAuth.getInstance().removeAuthStateListener(authListener);
-        }
     }
 
     @Override

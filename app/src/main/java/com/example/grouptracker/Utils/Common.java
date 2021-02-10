@@ -19,7 +19,6 @@ public class Common {
     public static final int ERROR_DIALOG_REQUEST = 9001;
     public static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
-    public static final int LOCATION_SERVICE_ID = 175;
     public static final String ACTION_START_LOCATION_SERVICE = "startLocationService";
     public static final String ACTION_STOP_LOCATION_SERVICE = "stopLocationService";
     public static final String ACTION_START_GEOFENCING_SERVICE = "startGeofencingService";
